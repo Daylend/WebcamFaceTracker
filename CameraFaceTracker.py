@@ -11,6 +11,7 @@ CAM_USER = "admin"
 CAM_PASSWORD = "admin"
 PROTOTXT = "deploy.prototxt"
 WEIGHTS = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
+CREDS_FILENAME = "camcreds.json"
 CONF_THRESH = 0.35
 NMS_THRESH = 0.4
 TARGET_X = 150
@@ -26,12 +27,13 @@ PTZ_UP = 2
 PTZ_LEFT = 4
 PTZ_RIGHT = 6
 
+
 def movecamera(direction):
     URL = CAM_URL + CONTROL_URL + "?" + "loginuse=" + CAM_USER + "&" + "loginpas=" + CAM_PASSWORD + \
           "&" + "command=" + str(int(direction)) + "&onestep=0"
     STOPURL = CAM_URL + CONTROL_URL + "?" + "loginuse=" + CAM_USER + "&" + "loginpas=" + CAM_PASSWORD + \
           "&" + "command=" + str(int(PTZ_STOP)) + "&onestep=0"
-    #print(URL)
+    # print(URL)
     requests.get(URL)
     # convert wait time in ms to s then divide
     time.sleep(WAIT_TIME/1000 / 2)
@@ -40,12 +42,11 @@ def movecamera(direction):
 
 def main():
     creds = []
-    with open("camcreds.json", "r") as camcreds:
+    with open(CREDS_FILENAME, "r") as camcreds:
         creds = json.load(camcreds)
     global CAM_USER, CAM_PASSWORD
     CAM_USER = creds["camUser"]
     CAM_PASSWORD = creds["camPassword"]
-
 
     while True:
 
@@ -91,29 +92,27 @@ def main():
             centerYDiff = TARGET_Y - centerY
 
 
-            print("cx: ", centerX, "cy: ", centerY, "xdiff: ", centerXDiff, "ydiff: ", centerYDiff, "radius: ", TARGET_RADIUS)
+            # print("cx: ", centerX, "cy: ", centerY, "xdiff: ", centerXDiff, "ydiff: ",
+            # centerYDiff, "radius: ", TARGET_RADIUS)
+
             # elif cause I only want to worry about one direction at a time
             # check for turn right
             if centerXDiff > TARGET_RADIUS:
                 movecamera(PTZ_RIGHT)
-                print("RIGHT")
+                #print("RIGHT")
             elif centerXDiff < -1*TARGET_RADIUS:
                 movecamera(PTZ_LEFT)
-                print("LEFT")
+                #print("LEFT")
             elif centerYDiff > TARGET_RADIUS:
                 movecamera(PTZ_UP)
-                print("UP")
+                #print("UP")
             elif centerYDiff < -1*TARGET_RADIUS:
                 movecamera(PTZ_DOWN)
-                print("DOWN")
-
-
-
+                #print("DOWN")
 
             text = "{:.2f}%".format(confidences[i]*100)
             cv2.rectangle(image, (startX, startY), (endX, endY), (0, 0, 255), 2)
             cv2.rectangle(image, (5+centerX, 5+centerY), (-5+centerX, -5+centerY), (0, 255, 0), 2)
-            # cv2.rectangle(image, (5+centerX, 5+centerY), (-5+centerX, -5+centerY), (0, 255, 0), 1)
             cv2.putText(image, text, (startX, y), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
 
         cv2.imshow("test", image)
