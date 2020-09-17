@@ -1,6 +1,7 @@
-# CameraFaceTracker
-Controls a PTZ webcam to aim directly at your face, wherever it may be.
+# SRI Cam Face Tracker
+Controls a PTZ SRIcam security camera using the web API to aim directly at your face, wherever it may be.
+Very useful for long webcam sessions where eventually you'll end up moving/slouching!
 
-Using OpenCV's built in dnn modules for the heavy lifting.
+Face detection is done using OpenCV's built in deep neural network modules for the heavy lifting.
 
 Use file camcreds.json to store your username and password for the webcam. Example file is camcreds_example.json.
